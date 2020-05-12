@@ -1,0 +1,84 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "vnetName": {
+        "type": "string",
+        "metadata": {
+          "description": "Name of the virtual network"
+        }
+      },
+      "vnetAddressPrefix": {
+        "type": "string",
+        "metadata": {
+          "description": "Address prefix for the virtual network"
+        }
+      },
+      "subnet1Name": {
+        "type": "string",
+        "metadata": {
+          "description": "Name of the first subnet in the VNet"
+        }
+      },
+      "subnet1Prefix": {
+        "type": "string",
+        "metadata": {
+          "description": "Address prefix for subnet1"
+        }
+      },
+      "subnet2Name": {
+        "type": "string",
+        "metadata": {
+          "description": "Name of the second subnet in the VNet"
+        }
+      },
+      "subnet2Prefix": {
+        "type": "string",
+        "metadata": {
+          "description": "Address prefix for subnet2"
+        }
+      },
+      "networkSecurityGroupName": {
+         "type": "string",
+         "metadata": {
+           "description": "Name of the Network Security Groups."
+         }
+      }
+    },
+    "resources": [
+      {
+        "type": "Microsoft.Network/virtualNetworks",
+        "apiVersion": "2018-11-01",
+        "name": "[parameters('vnetName')]",
+        "location": "[resourceGroup().location]",   
+        "properties": {
+          "addressSpace": {
+            "addressPrefixes": [
+              "[parameters('vnetAddressPrefix')]"
+            ]
+          },
+          "subnets": [
+            {
+              "name": "[parameters('subnet1Name')]",
+              "properties": {
+                "addressPrefix": "[parameters('subnet1Prefix')]",
+                "networkSecurityGroup": {
+                  "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]"
+                }
+              }
+            },
+            {
+              "name": "[parameters('subnet2Name')]",
+              "properties": {
+                "addressPrefix": "[parameters('subnet2Prefix')]",
+                "networkSecurityGroup": {
+                  "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "outputs": {}
+  }
