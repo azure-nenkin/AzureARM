@@ -1,0 +1,83 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "vmName": {
+        "type": "string",
+        "metadata": {
+          "description": "Name of the Virtual Machine."
+        }
+      },
+      "adminUsername": {
+        "type": "string",
+        "metadata": {
+          "description": "User name for the Virtual Machine."
+        }
+      },
+      "adminPassword": {
+        "type": "securestring",
+        "metadata": {
+          "description": "Password for the Virtual Machine."
+        }
+      },
+      "nicName": {
+        "type": "string",
+        "metadata": {
+          "description": "NIC for the Virtual Machine."
+        }
+      }
+    },
+    "variables": {
+      "location": "[resourceGroup().location]", 
+      "vmSize": "Standard_B1ls",
+      "imagePublisher": "Canonical",
+      "imageOffer": "UbuntuServer",
+      "ubuntuOSVersion": "18.04-LTS"
+    },
+    "resources": [
+      {
+        "type": "Microsoft.Compute/virtualMachines",
+        "apiVersion": "2018-10-01",
+        "name": "[parameters('vmName')]",
+        "location": "[variables('location')]",
+        "properties": {
+          "hardwareProfile": {
+            "vmSize": "[variables('vmSize')]"
+          },
+          "osProfile": {
+            "computerName": "[parameters('vmName')]",
+            "adminUsername": "[parameters('adminUsername')]",
+            "adminPassword": "[parameters('adminPassword')]"
+          },
+          "storageProfile": {
+            "imageReference": {
+              "publisher": "[variables('imagePublisher')]",
+              "offer": "[variables('imageOffer')]",
+              "sku": "[variables('ubuntuOSVersion')]",
+              "version": "latest"
+            },
+            "osDisk": {
+              "name": "[concat('OSdisk-', parameters('vmName'))]",
+              "createOption": "FromImage"
+            },
+            "dataDisks": [
+              {
+                "name": "[concat('Datadisk-',parameters('vmName'))]",
+                "diskSizeGB": 1023,
+                "lun": 0,
+                "createOption": "Empty"
+              }
+            ]
+          },
+          "networkProfile": {
+            "networkInterfaces": [
+              {
+                "id": "[parameters('nicName')]"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": {}
+  }
